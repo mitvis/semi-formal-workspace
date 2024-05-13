@@ -12,13 +12,13 @@ export async function makeReal(editor: Editor, apiKey: string) {
 	if (selectedShapes.length === 0) throw Error('First select something to make real.')
 
 	// Create the preview shape
-	const { maxX, midY } = editor.getSelectionPageBounds()!
+	const { midX, maxY } = editor.getSelectionPageBounds()!
 	const newShapeId = createShapeId()
 	editor.createShape<PreviewShape>({
 		id: newShapeId,
 		type: 'response',
-		x: maxX + 60, // to the right of the selection
-		y: midY - (540 * 2) / 3 / 2, // half the height of the preview's initial shape
+		x: midX - (960 * 2) / 3 / 2, // center of the preview's initial shape width
+		y: maxY + 60, // below the selection
 		props: { html: '' },
 	})
 
