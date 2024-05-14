@@ -3,9 +3,11 @@ import {
 	BaseBoxShapeUtil,
 	DefaultSpinner,
 	HTMLContainer,
-	Icon,
+	// Icon,
 	SvgExportContext,
 	TLBaseShape,
+	TldrawUiButton,
+	TldrawUiButtonIcon,
 	Vec,
 	stopEventPropagation,
 	toDomPrecision,
@@ -38,7 +40,7 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 	override isAspectRatioLocked = () => false
 	override canResize = () => true
 	override canBind = () => false
-	override canUnmount = () => false
+	// override canUnmount = () => false
 
 	override component(shape: PreviewShape) {
 		const isEditing = useIsEditing(shape.id)
@@ -125,7 +127,7 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 					}}
 					onPointerDown={stopEventPropagation}
 				>
-					<Icon icon="duplicate" />
+					<TldrawUiButtonIcon icon="duplicate" />
 				</div>
 				{htmlToUse && (
 					<div
