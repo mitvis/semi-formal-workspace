@@ -14,34 +14,56 @@ import {
 	TldrawUiMenuItem,
 	DefaultToolbarContent,
 	TLComponents,
+	TLUiOverrides,
+	DefaultKeyboardShortcutsDialog,
+	DefaultKeyboardShortcutsDialogContent,
+	TLUiKeyboardShortcutsDialogProps,
 } from '@tldraw/tldraw'
+import { CellTool } from './lib/cellTool'
 
 const Tldraw = dynamic(async () => (await import('@tldraw/tldraw')).Tldraw, {
 	ssr: false,
 })
 
+const uiOverrides: TLUiOverrides = {
+	tools(editor, tools) {
+		// Create a tool item in the ui's context.
+		tools.cell = {
+			id: 'cell',
+			icon: tools['frame'].icon,
+			label: 'Cell',
+			kbd: 'c',
+			onSelect: () => {
+				editor.setCurrentTool('cell')
+			},
+		}
+		return tools
+	},
+}
+
 const shapeUtils = [PreviewShapeUtil]
 
 function CustomToolbar() {
-	const editor = useEditor()
 	const tools = useTools()
-	const isScreenshotSelected = useIsToolSelected(tools['rhombus-2'])
+	const isCellSelected = useIsToolSelected(tools['cell'])
 	return (
 		<div>
 			<DefaultToolbar>
-				<TldrawUiMenuItem {...tools['rhombus-2']} isSelected={isScreenshotSelected} />
+				<TldrawUiMenuItem {...tools['cell']} isSelected={isCellSelected} />
 
 				<DefaultToolbarContent />
-				<button
-					onClick={() => {
-						editor.selectAll().deleteShapes(editor.getSelectedShapeIds())
-					}}
-					title="delete all"
-				>
-					🧨
-				</button>
 			</DefaultToolbar>
 		</div>
+	)
+}
+
+function CustomKeyboardShortcutsDialog(props: TLUiKeyboardShortcutsDialogProps) {
+	const tools = useTools()
+	return (
+		<DefaultKeyboardShortcutsDialog {...props}>
+			<DefaultKeyboardShortcutsDialogContent />
+			<TldrawUiMenuItem {...tools['cell']} />
+		</DefaultKeyboardShortcutsDialog>
 	)
 }
 
@@ -52,12 +74,21 @@ function SharePanel() {
 const components: TLComponents = {
 	Toolbar: CustomToolbar, // null will hide the panel instead
 	SharePanel: SharePanel,
+	KeyboardShortcutsDialog: CustomKeyboardShortcutsDialog,
 }
+
+const customTools = [CellTool]
 
 export default function App() {
 	return (
 		<div className="editor">
-			<Tldraw persistenceKey="make-real" components={components} shapeUtils={shapeUtils}>
+			<Tldraw
+				persistenceKey="make-real"
+				tools={customTools}
+				components={components}
+				shapeUtils={shapeUtils}
+				overrides={uiOverrides}
+			>
 				<RiskyButCoolAPIKeyInput />
 			</Tldraw>
 		</div>

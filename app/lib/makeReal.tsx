@@ -11,17 +11,6 @@ export async function makeReal(editor: Editor, apiKey: string) {
 
 	if (selectedShapes.length === 0) throw Error('First select something to make real.')
 
-	// Create the preview shape
-	const { midX, maxY } = editor.getSelectionPageBounds()!
-	const newShapeId = createShapeId()
-	editor.createShape<PreviewShape>({
-		id: newShapeId,
-		type: 'response',
-		x: midX - (960 * 2) / 3 / 2, // center of the preview's initial shape width
-		y: maxY + 60, // below the selection
-		props: { html: '' },
-	})
-
 	// Get an SVG based on the selected shapes
 	const svg = await editor.getSvgElement(selectedShapes, {
 		scale: 1,
@@ -62,6 +51,18 @@ export async function makeReal(editor: Editor, apiKey: string) {
 
 	// Send everything to OpenAI and get some HTML back
 	try {
+		// Create the preview shape
+		const { minX, minY, midY, maxY } = editor.getSelectionPageBounds()!
+		const newShapeId = createShapeId()
+		editor.createShape<PreviewShape>({
+			id: newShapeId,
+			type: 'response',
+			x: minX /*  - (960 * 2) / 3 / 2 */, // center of the preview's initial shape width
+			// y: maxY + 60, // below the selection
+			y: minY,
+			props: { html: '' },
+		})
+
 		const json = await getHtmlFromOpenAI({
 			image: dataUrl,
 			apiKey,
