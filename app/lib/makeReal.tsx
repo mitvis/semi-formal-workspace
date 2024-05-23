@@ -48,7 +48,7 @@ export async function makeReal(editor: Editor, apiKey: string) {
 		width: svgString.width,
 	})
 	const dataUrl = await blobToBase64(blob!)
-	downloadDataURLAsFile(dataUrl, 'tldraw.png')
+	// downloadDataURLAsFile(dataUrl, 'tldraw.png')
 
 	// Get any previous previews among the selected shapes
 	const previousPreviews = selectedShapes.filter((shape) => {

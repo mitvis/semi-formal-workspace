@@ -31,25 +31,25 @@ export function BlueButton(props: { selectedBlocks: Block[] }) {
 
 	const Components = useComponentsContext()!
 
-	// Tracks whether the text & background are both blue.
-	const [isSelected, setIsSelected] = useState<boolean>(
-		editor.getActiveStyles().textColor === 'blue' &&
-			editor.getActiveStyles().backgroundColor === 'blue'
-	)
+	// // Tracks whether the text & background are both blue.
+	// const [isSelected, setIsSelected] = useState<boolean>(
+	// 	editor.getActiveStyles().textColor === 'blue' &&
+	// 		editor.getActiveStyles().backgroundColor === 'blue'
+	// )
 
-	// Updates state on content or selection change.
-	useEditorContentOrSelectionChange(() => {
-		setIsSelected(
-			editor.getActiveStyles().textColor === 'blue' &&
-				editor.getActiveStyles().backgroundColor === 'blue'
-		)
-	}, editor)
+	// // Updates state on content or selection change.
+	// useEditorContentOrSelectionChange(() => {
+	// 	setIsSelected(
+	// 		editor.getActiveStyles().textColor === 'blue' &&
+	// 			editor.getActiveStyles().backgroundColor === 'blue'
+	// 	)
+	// }, editor)
 
 	const handleClick = useCallback(async () => {
-		editor.toggleStyles({
-			textColor: 'blue',
-			backgroundColor: 'blue',
-		})
+		// editor.toggleStyles({
+		// 	textColor: 'blue',
+		// 	backgroundColor: 'blue',
+		// })
 
 		// for (const block of props.selectedBlocks) {
 		// 	renderBlock({ block, editor: props.tldrawEditor })
@@ -83,13 +83,13 @@ export function BlueButton(props: { selectedBlocks: Block[] }) {
 			})
 		}
 		console.log('complete!')
-	}, [tldrawEditor, editor, props.selectedBlocks, addToast])
+	}, [tldrawEditor, props.selectedBlocks, addToast])
 
 	return (
 		<Components.FormattingToolbar.Button
 			mainTooltip={'Make Real'}
 			onClick={handleClick}
-			isSelected={isSelected}
+			// isSelected={isSelected}
 		>
 			Make Real
 		</Components.FormattingToolbar.Button>

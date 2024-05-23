@@ -180,7 +180,7 @@ export class BlockNoteShape extends BaseBoxShapeUtil<IBlockNoteShape> {
 					// },
 				})
 				.then((dataUrl) => {
-					downloadDataURLAsFile(dataUrl, 'tldraw-test.png')
+					// downloadDataURLAsFile(dataUrl, 'tldraw-test.png')
 					resolve(
 						<g>
 							<image
