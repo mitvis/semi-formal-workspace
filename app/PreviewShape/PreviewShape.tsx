@@ -15,6 +15,7 @@ import {
 	useToasts,
 	useValue,
 } from '@tldraw/tldraw'
+import { ReactElement } from 'react'
 
 export type PreviewShape = TLBaseShape<
 	'response',
@@ -162,29 +163,37 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 		)
 	}
 
-	override toSvg(shape: PreviewShape, _ctx: SvgExportContext): SVGElement | Promise<SVGElement> {
-		const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+	// TODO: this code appears to be broken
+	override toSvg(
+		shape: PreviewShape,
+		_ctx: SvgExportContext
+	): ReactElement | Promise<ReactElement> {
+		// const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
 		// while screenshot is the same as the old one, keep waiting for a new one
 		return new Promise((resolve, _) => {
-			if (window === undefined) return resolve(g)
+			if (window === undefined) return resolve(<g />)
 			const windowListener = (event: MessageEvent) => {
 				if (event.data.screenshot && event.data?.shapeid === shape.id) {
-					const image = document.createElementNS('http://www.w3.org/2000/svg', 'image')
-					image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', event.data.screenshot)
-					image.setAttribute('width', shape.props.w.toString())
-					image.setAttribute('height', shape.props.h.toString())
-					g.appendChild(image)
+					// const image = document.createElementNS('http://www.w3.org/2000/svg', 'image')
+					// image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', event.data.screenshot)
+					// image.setAttribute('width', shape.props.w.toString())
+					// image.setAttribute('height', shape.props.h.toString())
+					// g.appendChild(image)
 					window.removeEventListener('message', windowListener)
 					clearTimeout(timeOut)
-					resolve(g)
+					resolve(
+						<g>
+							<image href={event.data.screenshot} width={shape.props.w} height={shape.props.h} />
+						</g>
+					)
 				}
 			}
 			const timeOut = setTimeout(() => {
-				resolve(g)
+				resolve(<g />)
 				window.removeEventListener('message', windowListener)
 			}, 2000)
 			window.addEventListener('message', windowListener)
-			//request new screenshot
+			// request new screenshot
 			const firstLevelIframe = document.getElementById(`iframe-1-${shape.id}`) as HTMLIFrameElement
 			if (firstLevelIframe) {
 				firstLevelIframe.contentWindow!.postMessage(

@@ -9,7 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@blocknote/core": "^0.13.3",
+    "@blocknote/mantine": "^0.13.3",
+    "@blocknote/react": "^0.13.3",
     "@tldraw/tldraw": "^2.1.4",
+    "html-to-image": "^1.11.11",
+    "html-to-json-parser": "^2.0.1",
+    "html2canvas": "^1.4.1",
     "next": "14.0.3",
     "react": "^18",
     "react-dom": "^18"

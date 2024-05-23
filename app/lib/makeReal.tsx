@@ -4,10 +4,13 @@ import { getHtmlFromOpenAI } from './getHtmlFromOpenAI'
 import { blobToBase64 } from './blobToBase64'
 import { addGridToSvg } from './addGridToSvg'
 import { PreviewShape } from '../PreviewShape/PreviewShape'
+import { downloadDataURLAsFile } from './downloadDataUrlAsFile'
 
 export async function makeReal(editor: Editor, apiKey: string) {
+	// debugger
 	// Get the selected shapes (we need at least one)
 	const selectedShapes = editor.getSelectedShapes()
+	console.log(selectedShapes)
 
 	if (selectedShapes.length === 0) throw Error('First select something to make real.')
 
@@ -22,6 +25,9 @@ export async function makeReal(editor: Editor, apiKey: string) {
 	})
 
 	if (!svg || !svgString) {
+		console.warn('svg failed')
+		console.log('svg', svg)
+		console.log('svgString', svgString)
 		return
 	}
 
@@ -42,7 +48,7 @@ export async function makeReal(editor: Editor, apiKey: string) {
 		width: svgString.width,
 	})
 	const dataUrl = await blobToBase64(blob!)
-	// downloadDataURLAsFile(dataUrl, 'tldraw.png')
+	downloadDataURLAsFile(dataUrl, 'tldraw.png')
 
 	// Get any previous previews among the selected shapes
 	const previousPreviews = selectedShapes.filter((shape) => {
@@ -50,10 +56,10 @@ export async function makeReal(editor: Editor, apiKey: string) {
 	}) as PreviewShape[]
 
 	// Send everything to OpenAI and get some HTML back
+	const newShapeId = createShapeId()
 	try {
 		// Create the preview shape
 		const { minX, minY, midY, maxY } = editor.getSelectionPageBounds()!
-		const newShapeId = createShapeId()
 		editor.createShape<PreviewShape>({
 			id: newShapeId,
 			type: 'response',
