@@ -108,6 +108,8 @@ export async function makeReal(editor: Editor, apiKey: string) {
 		})
 
 		console.log(`Response: ${message}`)
+
+		return newShapeId
 	} catch (e) {
 		// If anything went wrong, delete the shape.
 		editor.deleteShape(newShapeId)

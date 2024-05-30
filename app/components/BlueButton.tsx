@@ -6,8 +6,9 @@ import {
 import '@blocknote/mantine/style.css'
 import { useCallback, useState } from 'react'
 import { Block } from '@blocknote/core'
-import { Editor, createShapeId, useEditor, useToasts } from '@tldraw/tldraw'
+import { Editor, createShapeId, getSvgAsImage, useEditor, useToasts } from '@tldraw/tldraw'
 import { makeReal } from '../lib/makeReal'
+import { blobToBase64 } from '../lib/blobToBase64'
 
 // export function renderBlock({ block, editor }: { block: Block; editor: Editor }) {
 // 	if (block.type === 'paragraph') {
@@ -73,7 +74,44 @@ export function BlueButton(props: { selectedBlocks: Block[] }) {
 			const input = document.getElementById('openai_key_risky_but_cool') as HTMLInputElement
 			const apiKey = input?.value ?? null
 			if (!apiKey) throw Error('Make sure the input includes your API Key!')
-			await makeReal(tldrawEditor, apiKey)
+			const newShapeId = await makeReal(tldrawEditor, apiKey)
+			if (newShapeId === undefined) {
+				throw Error('Make Real failed')
+			}
+
+			const svgString = await tldrawEditor.getSvgString([newShapeId], {
+				scale: 1,
+				background: true,
+			})
+
+			if (svgString === undefined) {
+				throw Error('Make Real failed')
+			}
+
+			const IS_SAFARI = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+
+			const blob = await getSvgAsImage(svgString.svg, IS_SAFARI, {
+				type: 'png',
+				quality: 0.8,
+				scale: 1,
+				height: svgString.height,
+				width: svgString.width,
+			})
+			const dataUrl = await blobToBase64(blob!)
+
+			editor.insertBlocks(
+				[
+					{
+						id: newShapeId,
+						type: 'image',
+						props: {
+							url: dataUrl,
+						},
+					},
+				],
+				props.selectedBlocks[props.selectedBlocks.length - 1].id,
+				'after'
+			)
 		} catch (e) {
 			console.error(e)
 			addToast({

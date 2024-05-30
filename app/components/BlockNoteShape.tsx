@@ -113,7 +113,7 @@ export class BlockNoteShape extends BaseBoxShapeUtil<IBlockNoteShape> {
 			// window.addEventListener('message', windowListener)
 			// request new screenshot
 
-			console.log('foo')
+			// console.log('foo')
 
 			const element = document.getElementById(shape.id)
 

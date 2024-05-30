@@ -117,6 +117,8 @@ async function uploadFile(file: File) {
 	if (file.type === 'image/jpeg' || file.type === 'image/png') {
 		return blobToBase64(file)
 	}
+
+	return ''
 }
 
 function MyComponent() {
