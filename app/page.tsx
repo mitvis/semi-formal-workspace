@@ -42,13 +42,55 @@ import {
 	useCreateBlockNote,
 	useEditorContentOrSelectionChange,
 } from '@blocknote/react'
-import { Block, filterSuggestionItems } from '@blocknote/core'
+import {
+	Block,
+	BlockNoteEditor,
+	BlockNoteSchema,
+	BlockSchema,
+	InlineContentSchema,
+	StyleSchema,
+	defaultBlockSpecs,
+	filterSuggestionItems,
+	insertOrUpdateBlock,
+} from '@blocknote/core'
 import { BlueButton } from './components/BlueButton'
 import { blobToBase64 } from './lib/blobToBase64'
 import { insertImage } from './components/ImageBlock'
+import { Alert } from './components/CodeBlock'
+import { RiAlertFill } from 'react-icons/ri'
 
 const Tldraw = dynamic(async () => (await import('@tldraw/tldraw')).Tldraw, {
 	ssr: false,
+})
+
+// Our schema with block specs, which contain the configs and implementations for blocks
+// that we want our editor to use.
+const schema = BlockNoteSchema.create({
+	blockSpecs: {
+		// Adds all default blocks.
+		...defaultBlockSpecs,
+		// Adds the Alert block.
+		alert: Alert,
+	},
+})
+
+// Slash menu item to insert an Alert block
+const insertAlert = <
+	BSchema extends BlockSchema,
+	I extends InlineContentSchema,
+	S extends StyleSchema
+>(
+	editor: BlockNoteEditor<BSchema, I, S>
+) => ({
+	title: 'Alert',
+	onItemClick: () => {
+		insertOrUpdateBlock(editor, {
+			type: 'alert',
+		})
+	},
+	aliases: ['alert', 'notification', 'emphasize', 'warning', 'error', 'info', 'success'],
+	group: 'Other',
+	icon: <RiAlertFill />,
 })
 
 const uiOverrides: TLUiOverrides = {
@@ -125,6 +167,7 @@ function MyComponent() {
 	const tldrawEditor = useEditor()
 	const [blocks, setBlocks] = useState<Block[]>([])
 	const editor = useCreateBlockNote({
+		schema,
 		uploadFile,
 	})
 	useEditorContentOrSelectionChange(() => {
@@ -155,7 +198,7 @@ function MyComponent() {
 				{/* <p>The count is {state}! </p>
 				<button onClick={() => setState((s) => s - 1)}>-1</button>
 				<p>These components are on the canvas. They will scale with camera zoom like shapes.</p> */}
-				<BlockNoteView editor={editor} formattingToolbar={false}>
+				<BlockNoteView editor={editor} formattingToolbar={false} slashMenu={false}>
 					{/* <SuggestionMenuController
 						triggerCharacter={'\\'}
 						getItems={async (query) =>
@@ -163,6 +206,17 @@ function MyComponent() {
 							filterSuggestionItems([...getDefaultReactSlashMenuItems(editor), insertImage], query)
 						}
 					/> */}
+					<SuggestionMenuController
+						triggerCharacter={'/'}
+						getItems={async (query) => {
+							// Gets all default slash menu items and `insertAlert` item.
+							console.log('getting editor', editor)
+							return filterSuggestionItems(
+								[...getDefaultReactSlashMenuItems(editor), insertAlert(editor)],
+								query
+							)
+						}}
+					/>
 					<FormattingToolbarController
 						formattingToolbar={() => (
 							<FormattingToolbar>
