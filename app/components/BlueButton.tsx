@@ -9,6 +9,7 @@ import { Block } from '@blocknote/core'
 import { Editor, createShapeId, getSvgAsImage, useEditor, useToasts } from '@tldraw/tldraw'
 import { makeReal } from '../lib/makeReal'
 import { blobToBase64 } from '../lib/blobToBase64'
+import { PreviewShape } from '../PreviewShape/PreviewShape'
 
 // export function renderBlock({ block, editor }: { block: Block; editor: Editor }) {
 // 	if (block.type === 'paragraph') {
@@ -79,34 +80,40 @@ export function BlueButton(props: { selectedBlocks: Block[] }) {
 				throw Error('Make Real failed')
 			}
 
-			const svgString = await tldrawEditor.getSvgString([newShapeId], {
-				scale: 1,
-				background: true,
-			})
+			const generatedShape = tldrawEditor.getShape(newShapeId) as PreviewShape
 
-			if (svgString === undefined) {
-				throw Error('Make Real failed')
-			}
+			// const svgString = await tldrawEditor.getSvgString([newShapeId], {
+			// 	scale: 1,
+			// 	background: true,
+			// })
 
-			const IS_SAFARI = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+			// if (svgString === undefined) {
+			// 	throw Error('Make Real failed')
+			// }
 
-			const blob = await getSvgAsImage(svgString.svg, IS_SAFARI, {
-				type: 'png',
-				quality: 0.8,
-				scale: 1,
-				height: svgString.height,
-				width: svgString.width,
-			})
-			const dataUrl = await blobToBase64(blob!)
+			// const IS_SAFARI = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+
+			// const blob = await getSvgAsImage(svgString.svg, IS_SAFARI, {
+			// 	type: 'png',
+			// 	quality: 0.8,
+			// 	scale: 1,
+			// 	height: svgString.height,
+			// 	width: svgString.width,
+			// })
+			// const dataUrl = await blobToBase64(blob!)
 
 			editor.insertBlocks(
 				[
 					{
 						id: newShapeId,
-						type: 'image',
-						props: {
-							url: dataUrl,
-						},
+						type: 'paragraph',
+						content: [
+							{
+								type: 'text',
+								text: generatedShape.props.html,
+								styles: {},
+							},
+						],
 					},
 				],
 				props.selectedBlocks[props.selectedBlocks.length - 1].id,
