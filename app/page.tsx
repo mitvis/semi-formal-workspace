@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import '@tldraw/tldraw/tldraw.css'
-import { MakeRealButton } from './components/MakeRealButton'
+// import { MakeRealButton } from './components/MakeRealButton'
 import { TldrawLogo } from './components/TldrawLogo'
 import { RiskyButCoolAPIKeyInput } from './components/RiskyButCoolAPIKeyInput'
 import { PreviewShapeUtil } from './PreviewShape/PreviewShape'
@@ -58,10 +58,14 @@ import { blobToBase64 } from './lib/blobToBase64'
 import { insertImage } from './components/ImageBlock'
 import { Alert } from './components/CodeBlock'
 import { RiAlertFill } from 'react-icons/ri'
+import Runtime, { cells } from './lib/reactiveRuntime'
+import { observer } from 'mobx-react-lite'
 
 const Tldraw = dynamic(async () => (await import('@tldraw/tldraw')).Tldraw, {
 	ssr: false,
 })
+
+Runtime()
 
 // Our schema with block specs, which contain the configs and implementations for blocks
 // that we want our editor to use.
@@ -135,9 +139,9 @@ function CustomKeyboardShortcutsDialog(props: TLUiKeyboardShortcutsDialogProps) 
 	)
 }
 
-function SharePanel() {
-	return <MakeRealButton />
-}
+// function SharePanel() {
+// 	return <MakeRealButton />
+// }
 
 async function uploadFile(file: File) {
 	// const body = new FormData()
@@ -163,7 +167,7 @@ async function uploadFile(file: File) {
 	return ''
 }
 
-function MyComponent() {
+const MyComponent = observer(() => {
 	const tldrawEditor = useEditor()
 	const [blocks, setBlocks] = useState<Block[]>([])
 	const editor = useCreateBlockNote({
@@ -179,6 +183,22 @@ function MyComponent() {
 
 	return (
 		<>
+			<div>
+				<div>
+					<textarea
+						style={{ width: '400px' }}
+						onChange={(e) => cells[0].set(e.target.value)}
+						value={cells[0].get()}
+					/>
+				</div>
+				<div>
+					<textarea
+						style={{ width: '400px' }}
+						onChange={(e) => cells[1].set(e.target.value)}
+						value={cells[1].get()}
+					/>
+				</div>
+			</div>
 			<div
 				style={{
 					position: 'absolute',
@@ -210,7 +230,6 @@ function MyComponent() {
 						triggerCharacter={'/'}
 						getItems={async (query) => {
 							// Gets all default slash menu items and `insertAlert` item.
-							console.log('getting editor', editor)
 							return filterSuggestionItems(
 								[...getDefaultReactSlashMenuItems(editor), insertAlert(editor)],
 								query
@@ -255,11 +274,11 @@ function MyComponent() {
 			</div>
 		</>
 	)
-}
+})
 
 const components: TLComponents = {
 	Toolbar: CustomToolbar, // null will hide the panel instead
-	SharePanel: SharePanel,
+	// SharePanel: SharePanel,
 	KeyboardShortcutsDialog: CustomKeyboardShortcutsDialog,
 	OnTheCanvas: MyComponent,
 }

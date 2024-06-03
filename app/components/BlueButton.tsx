@@ -75,12 +75,12 @@ export function BlueButton(props: { selectedBlocks: Block[] }) {
 			const input = document.getElementById('openai_key_risky_but_cool') as HTMLInputElement
 			const apiKey = input?.value ?? null
 			if (!apiKey) throw Error('Make sure the input includes your API Key!')
-			const newShapeId = await makeReal(tldrawEditor, apiKey)
-			if (newShapeId === undefined) {
+			const response = await makeReal(tldrawEditor, apiKey)
+			if (response === undefined) {
 				throw Error('Make Real failed')
 			}
 
-			const generatedShape = tldrawEditor.getShape(newShapeId) as PreviewShape
+			// const generatedShape = tldrawEditor.getShape(newShapeId) as PreviewShape
 
 			// const svgString = await tldrawEditor.getSvgString([newShapeId], {
 			// 	scale: 1,
@@ -102,15 +102,17 @@ export function BlueButton(props: { selectedBlocks: Block[] }) {
 			// })
 			// const dataUrl = await blobToBase64(blob!)
 
+			console.log('response', response)
+
 			editor.insertBlocks(
 				[
 					{
 						id: newShapeId,
-						type: 'paragraph',
+						type: 'alert',
 						content: [
 							{
 								type: 'text',
-								text: generatedShape.props.html,
+								text: response,
 								styles: {},
 							},
 						],
@@ -128,7 +130,7 @@ export function BlueButton(props: { selectedBlocks: Block[] }) {
 			})
 		}
 		console.log('complete!')
-	}, [tldrawEditor, props.selectedBlocks, addToast])
+	}, [tldrawEditor, props.selectedBlocks, editor, addToast])
 
 	return (
 		<Components.FormattingToolbar.Button

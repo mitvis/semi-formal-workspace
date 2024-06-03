@@ -40,11 +40,11 @@ export async function getHtmlFromOpenAI({
 	const userContent = messages[1].content as Exclude<MessageContent, string>
 
 	// Add the prompt into
-	userContent.push({
-		type: 'text',
-		text:
-			previousPreviews?.length > 0 ? OPENAI_USER_PROMPT_WITH_PREVIOUS_DESIGN : OPENAI_USER_PROMPT,
-	})
+	// userContent.push({
+	// 	type: 'text',
+	// 	text:
+	// 		previousPreviews?.length > 0 ? OPENAI_USER_PROMPT_WITH_PREVIOUS_DESIGN : OPENAI_USER_PROMPT,
+	// })
 
 	// Add the image
 	userContent.push({
@@ -63,12 +63,12 @@ export async function getHtmlFromOpenAI({
 		})
 	}
 
-	if (grid) {
-		userContent.push({
-			type: 'text',
-			text: `The designs have a ${grid.color} grid overlaid on top. Each cell of the grid is ${grid.size}x${grid.size}px.`,
-		})
-	}
+	// if (grid) {
+	// 	userContent.push({
+	// 		type: 'text',
+	// 		text: `The designs have a ${grid.color} grid overlaid on top. Each cell of the grid is ${grid.size}x${grid.size}px.`,
+	// 	})
+	// }
 
 	// Add the previous previews as HTML
 	for (let i = 0; i < previousPreviews.length; i++) {
@@ -86,10 +86,10 @@ export async function getHtmlFromOpenAI({
 	}
 
 	// Prompt the theme
-	userContent.push({
-		type: 'text',
-		text: `Please make your result use the ${theme} theme.`,
-	})
+	// userContent.push({
+	// 	type: 'text',
+	// 	text: `Please make your result use the ${theme} theme.`,
+	// })
 
 	const body: GPT4VCompletionRequest = {
 		model: 'gpt-4o',
