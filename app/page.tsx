@@ -167,7 +167,7 @@ async function uploadFile(file: File) {
 	return ''
 }
 
-const MyComponent = observer(() => {
+const MyComponent = () => {
 	const tldrawEditor = useEditor()
 	const [blocks, setBlocks] = useState<Block[]>([])
 	const editor = useCreateBlockNote({
@@ -183,22 +183,6 @@ const MyComponent = observer(() => {
 
 	return (
 		<>
-			<div>
-				<div>
-					<textarea
-						style={{ width: '400px' }}
-						onChange={(e) => cells[0].set(e.target.value)}
-						value={cells[0].get()}
-					/>
-				</div>
-				<div>
-					<textarea
-						style={{ width: '400px' }}
-						onChange={(e) => cells[1].set(e.target.value)}
-						value={cells[1].get()}
-					/>
-				</div>
-			</div>
 			<div
 				style={{
 					position: 'absolute',
@@ -274,7 +258,7 @@ const MyComponent = observer(() => {
 			</div>
 		</>
 	)
-})
+}
 
 const components: TLComponents = {
 	Toolbar: CustomToolbar, // null will hide the panel instead

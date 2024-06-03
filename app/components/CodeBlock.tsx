@@ -3,6 +3,9 @@ import { createReactBlockSpec } from '@blocknote/react'
 import { Menu } from '@mantine/core'
 import { MdCancel, MdCheckCircle, MdError, MdInfo } from 'react-icons/md'
 import './alertStyles.css'
+import { cells } from '../lib/reactiveRuntime'
+import { observer } from 'mobx-react-lite'
+import { IObservableValue } from 'mobx'
 
 // The types of alerts that users can choose from.
 export const alertTypes = [
@@ -47,6 +50,16 @@ export const alertTypes = [
 		},
 	},
 ] as const
+
+const Cell = observer(({ cell }: { cell: IObservableValue<string> }) => {
+	return (
+		<textarea
+			style={{ width: '400px' }}
+			onChange={(e) => cell.set(e.target.value)}
+			value={cell.get()}
+		/>
+	)
+})
 
 // The Alert block.
 export const Alert = createReactBlockSpec(
@@ -106,6 +119,14 @@ export const Alert = createReactBlockSpec(
 						</Menu.Dropdown>
 					</Menu>
 					{/*Rich text field for user to type in*/}
+					<div>
+						<div>
+							<Cell cell={cells.getCell('cell 0')} />
+						</div>
+						<div>
+							<Cell cell={cells.getCell('cell 1')} />
+						</div>
+					</div>
 					<div className={'inline-content'} ref={props.contentRef} />
 				</div>
 			)

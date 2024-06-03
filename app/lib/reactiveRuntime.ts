@@ -1,39 +1,44 @@
 // https://codesandbox.io/p/sandbox/typecell-in-30-lines-of-mobx-npwhgm
-import { observable, autorun, configure, trace } from 'mobx'
+import { configure } from 'mobx'
+import { CellMap } from './cellMap'
 
 configure({
 	enforceActions: 'never',
 })
 
-const context = observable({}, { name: 'context' })
+// const context = observable({}, { name: 'context' })
 
-export const cells = [
-	observable.box("$.greeting = 'Hello world';", { name: 'code of cell 0' }),
-	observable.box('console.log($.greeting);', { name: 'code of cell 1' }),
-]
+export const cells = new CellMap()
 
-for (let i = 0; i < cells.length; i++) {
-	const cell = cells[i]
-	// this will automatically rerun when an accessed observable changes.
-	// This could be:
-	// a) the code of the cell (accessed at cell.get())
-	// b) when a dependency under $ (context) has been updated
-	autorun(
-		() => {
-			trace(false) // this logs debug info
-			const code = cell.get()
+cells.setCell('cell 0', "$.greeting = 'Hello world';")
+cells.setCell('cell 1', 'console.log($.greeting);')
 
-			// create the function based on the cell code
-			const func = new Function('$', code)
+// export const cells = [
+// 	observable.box("$.greeting = 'Hello world';", { name: 'code of cell 0' }),
+// 	observable.box('console.log($.greeting);', { name: 'code of cell 1' }),
+// ]
 
-			// evaluate the function, passing context as parameter
-			console.log('Executing cell ' + i)
-			func.apply(null, [context])
-		},
-		{ name: 'Cell ' + i }
-	)
-}
+// for (let i = 0; i < cells.length; i++) {
+// 	const cell = cells[i]
+// 	// this will automatically rerun when an accessed observable changes.
+// 	// This could be:
+// 	// a) the code of the cell (accessed at cell.get())
+// 	// b) when a dependency under $ (context) has been updated
+// 	autorun(
+// 		() => {
+// 			trace(false) // this logs debug info
+// 			const code = cell.get()
 
+// 			// create the function based on the cell code
+// 			const func = new Function('$', code)
+
+// 			// evaluate the function, passing context as parameter
+// 			console.log('Executing cell ' + i)
+// 			func.apply(null, [context])
+// 		},
+// 		{ name: 'Cell ' + i }
+// 	)
+// }
 ;(window as any).cells = cells
 export default () => {}
 
